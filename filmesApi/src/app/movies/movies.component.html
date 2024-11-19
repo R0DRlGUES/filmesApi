@@ -1,0 +1,10 @@
+<div *ngIf="movies.length > 0; else noResults">
+  <div *ngFor="let movie of movies" class="movie-card">
+    <h3>{{ movie.Title }}</h3>
+    <p>Year: {{ movie.Year }}</p>
+    <img [src]="movie.Poster" alt="{{ movie.Title }}" />
+  </div>
+</div>
+<ng-template #noResults>
+  <p>No movies found.</p>
+</ng-template>
