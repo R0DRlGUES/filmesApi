@@ -1,4 +1,3 @@
-/* Estilo geral da página de detalhes do filme */
 body {
   font-family: Arial, sans-serif;
   background-color: #f4f4f4;
@@ -22,7 +21,6 @@ body {
   margin-top: 20px;
 }
 
-/* Imagem do filme */
 .movie-details img {
   width: 100%;
   max-width: 500px;
@@ -32,14 +30,12 @@ body {
   margin-bottom: 20px;
 }
 
-/* Título do filme */
 .movie-details h2 {
   font-size: 32px;
   color: #333;
   margin-bottom: 15px;
 }
 
-/* Detalhes do filme (ano, duração, sinopse, etc.) */
 .movie-details p {
   font-size: 16px;
   color: #555;
@@ -47,12 +43,10 @@ body {
   margin-bottom: 10px;
 }
 
-/* Destaques como 'Ano', 'Duração', etc. */
 .movie-details strong {
   color: #007bff;
 }
 
-/* Botão para voltar ou outra ação */
 .movie-details .back-button {
   padding: 12px 20px;
   background-color: #007bff;
@@ -69,7 +63,6 @@ body {
   background-color: #0056b3;
 }
 
-/* Responsividade */
 @media (max-width: 768px) {
   .movie-details {
     padding: 20px;
