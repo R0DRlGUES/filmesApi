@@ -1,14 +1,13 @@
 import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
-import { MoviesComponent } from './movies/movies.component';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, MoviesComponent],
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+  imports: [RouterModule],
+  template: `
+    <router-outlet></router-outlet>
+  `,
+  styleUrls: ['./app.component.css'],
 })
-export class AppComponent {
-  title = 'filmesApi';
-}
+export class AppComponent {}
