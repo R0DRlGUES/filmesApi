@@ -1,21 +1,100 @@
-.movie-details {
-  max-width: 600px;
-  margin: 0 auto;
-  padding: 20px;
-  text-align: center;
+/* Estilo geral da página de detalhes do filme */
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f4;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  flex-direction: column;
 }
 
+.movie-details {
+  width: 100%;
+  max-width: 1200px;
+  padding: 30px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  margin-top: 20px;
+}
+
+/* Imagem do filme */
 .movie-details img {
   width: 100%;
+  max-width: 500px;
   height: auto;
+  object-fit: cover;
+  border-radius: 8px;
   margin-bottom: 20px;
 }
 
+/* Título do filme */
 .movie-details h2 {
+  font-size: 32px;
+  color: #333;
+  margin-bottom: 15px;
+}
+
+/* Detalhes do filme (ano, duração, sinopse, etc.) */
+.movie-details p {
+  font-size: 16px;
+  color: #555;
+  line-height: 1.6;
   margin-bottom: 10px;
 }
 
-.movie-details p {
+/* Destaques como 'Ano', 'Duração', etc. */
+.movie-details strong {
+  color: #007bff;
+}
+
+/* Botão para voltar ou outra ação */
+.movie-details .back-button {
+  padding: 12px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
   font-size: 16px;
-  margin: 5px 0;
+  transition: background-color 0.3s ease;
+  margin-top: 20px;
+}
+
+.movie-details .back-button:hover {
+  background-color: #0056b3;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .movie-details {
+    padding: 20px;
+  }
+
+  .movie-details img {
+    max-width: 100%;
+  }
+
+  .movie-details h2 {
+    font-size: 28px;
+  }
+}
+
+@media (max-width: 480px) {
+  .movie-details h2 {
+    font-size: 24px;
+  }
+
+  .movie-details p {
+    font-size: 14px;
+  }
+
+  .movie-details .back-button {
+    padding: 10px 15px;
+    font-size: 14px;
+  }
 }

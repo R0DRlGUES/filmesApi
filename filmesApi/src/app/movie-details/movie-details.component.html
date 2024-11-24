@@ -1,9 +1,16 @@
-<div class="movie-details" *ngIf="movie">
-  <img [src]="movie.Poster" alt="{{ movie.Title }}" />
-  <h2>{{ movie.Title }}</h2>
-  <p><strong>Ano:</strong> {{ movie.Year }}</p>
-  <p><strong>Duração:</strong> {{ movie.Runtime }}</p>
-  <p><strong>Sinopse:</strong> {{ movie.Plot }}</p>
-  <p><strong>Elenco:</strong> {{ movie.Actors }}</p>
-  <p><strong>Prêmios:</strong> {{ movie.Awards }}</p>
-</div>
+<!DOCTYPE html>
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="movie-details.component.css">
+</head>
+<body>
+  <div class="movie-details" *ngIf="movie">
+    <img [src]="movie.Poster" alt="{{ movie.Title }}" />
+    <h2>{{ movie.Title }}</h2>
+    <p><strong>Ano:</strong> {{ movie.Year }}</p>
+    <p><strong>Duração:</strong> {{ movie.Runtime }}</p>
+    <p><strong>Sinopse:</strong> {{ movie.Plot }}</p>
+    <p><strong>Elenco:</strong> {{ movie.Actors }}</p>
+    <p><strong>Prêmios:</strong> {{ movie.Awards }}</p>
+  </div>
+</body>

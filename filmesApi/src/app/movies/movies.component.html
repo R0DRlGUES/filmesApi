@@ -1,33 +1,42 @@
-<div class="movies-container">
-  <!-- Barra de busca -->
-  <div class="search-bar">
-    <input
-      type="text"
-      [(ngModel)]="searchQuery"
-      placeholder="Digite o título"
-    />
-    <button (click)="searchMovies()">Buscar</button>
-  </div>
-
-  <!-- Exibição de mensagens de erro -->
-  <div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
-
-  <!-- Lista de filmes -->
-  <div *ngIf="movies.length > 0" class="movies-list">
-    <div *ngFor="let movie of movies" class="movie-card">
-      <img [src]="movie.Poster" alt="{{ movie.Title }}" />
-      <h3>{{ movie.Title }}</h3>
-      <p>{{ movie.Year }}</p>
-
-      <!-- Botão de detalhes -->
-      <a [routerLink]="['/details', movie.imdbID]">
-        <button>Ver Detalhes</button>
-      </a>
-
-      <!-- Botão de favoritos -->
-      <button (click)="toggleFavorite(movie)">
-        {{ isFavorite(movie.imdbID) ? 'Remover dos Favoritos' : 'Adicionar aos Favoritos' }}
-      </button>
+<!DOCTYPE html>
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="movies.component.css">
+</head>
+<body>
+  <div class="movies-container">
+    <!-- Barra de busca -->
+    <div class="search-bar">
+      <input
+        type="text"
+        [(ngModel)]="searchQuery"
+        placeholder="Digite o título"
+      />
+      <button (click)="searchMovies()">Buscar</button>
+    </div>
+  
+    <!-- Exibição de mensagens de erro -->
+    <div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
+  
+    <!-- Lista de filmes -->
+    <div *ngIf="movies.length > 0" class="movies-list">
+      <div *ngFor="let movie of movies" class="movie-card">
+        <img [src]="movie.Poster" alt="{{ movie.Title }}" />
+        <h3>{{ movie.Title }}</h3>
+        <p>{{ movie.Year }}</p>
+  
+        <!-- Botão de detalhes -->
+        <a [routerLink]="['/details', movie.imdbID]">
+          <button>Ver Detalhes</button>
+        </a>
+  
+        <!-- Botão de favoritos -->
+        <button (click)="toggleFavorite(movie)">
+          {{ isFavorite(movie.imdbID) ? 'Remover dos Favoritos' : 'Adicionar aos Favoritos' }}
+        </button>
+      </div>
     </div>
   </div>
-</div>
+</body>
+
+
