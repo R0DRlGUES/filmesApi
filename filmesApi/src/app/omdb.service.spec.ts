@@ -1,16 +1,21 @@
-import { TestBed } from '@angular/core/testing';
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
 
-import { OmdbService } from './services/omdb.service';
+@Injectable({
+  providedIn: 'root',
+})
+export class OmdbService {
+  private apiUrl = 'https://www.omdbapi.com/';
+  private apiKey = '11037ce9'; // Sua chave de API
 
-describe('OmdbService', () => {
-  let service: OmdbService;
+  constructor(private http: HttpClient) {}
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({});
-    service = TestBed.inject(OmdbService);
-  });
+  getMovies(searchQuery: string): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}?s=${searchQuery}&apikey=${this.apiKey}`);
+  }
 
-  it('should be created', () => {
-    expect(service).toBeTruthy();
-  });
-});
+  getMovieDetails(id: string): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}?i=${id}&apikey=${this.apiKey}`);
+  }
+}

@@ -6,8 +6,11 @@ import { RouterModule } from '@angular/router';
   standalone: true,
   imports: [RouterModule],
   template: `
+    <h1>{{ title }}</h1>
     <router-outlet></router-outlet>
   `,
   styleUrls: ['./app.component.css'],
 })
-export class AppComponent {}
+export class AppComponent {
+  title = 'filmesApi';
+}
