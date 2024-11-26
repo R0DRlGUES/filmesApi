@@ -1,106 +1,160 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { ActivatedRoute } from '@angular/router';
-import { MovieDetailsComponent } from '../movie-details/movie-details.component';
+import { MoviesComponent } from './movies.component';
+import { HttpClient } from '@angular/common/http';
+import { of, throwError } from 'rxjs';
 
-describe('MovieDetailsComponent', () => {
-  let component: MovieDetailsComponent;
-  let fixture: ComponentFixture<MovieDetailsComponent>;
-  let httpMock: HttpTestingController;
+describe('MoviesComponent', () => {
+  let component: MoviesComponent;
+  let fixture: ComponentFixture<MoviesComponent>;
+  let mockHttpClient: any;
 
   beforeEach(async () => {
+    mockHttpClient = {
+      get: jasmine.createSpy('get'),
+    };
+
     await TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, MovieDetailsComponent],
-      providers: [
-        {
-          provide: ActivatedRoute,
-          useValue: {
-            snapshot: {
-              paramMap: {
-                get: (key: string) => {
-                  if (key === 'id') return 'tt1234567';
-                  return null;
-                },
-              },
-            },
-          },
-        },
-      ],
+      imports: [MoviesComponent],
+      providers: [{ provide: HttpClient, useValue: mockHttpClient }],
     }).compileComponents();
 
-    // Criar o componente e injetar o HttpTestingController
-    fixture = TestBed.createComponent(MovieDetailsComponent);
+    fixture = TestBed.createComponent(MoviesComponent);
     component = fixture.componentInstance;
-    httpMock = TestBed.inject(HttpTestingController);
-
-    // Interceptar a requisição inicial do ngOnInit
-    const req = httpMock.expectOne(
-      `https://www.omdbapi.com/?i=tt1234567&apikey=11037ce9`
-    );
-    req.flush({
-      Title: 'Mock Movie',
-      Year: '2023',
-      Genre: 'Action',
-      imdbID: 'tt1234567',
-    });
-
-    fixture.detectChanges();
-  });
-
-  afterEach(() => {
-    if (httpMock) {
-      httpMock.verify(); // Verificar se todas as requisições foram tratadas
-    }
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should get movie ID from route parameters', () => {
-    expect(component.movieId).toBe('tt1234567');
+  describe('ngOnInit', () => {
+    it('should load favorites from localStorage', () => {
+      spyOn(localStorage, 'getItem').and.returnValue(
+        JSON.stringify([{ imdbID: 'tt1234567', Title: 'Favorite Movie' }])
+      );
+
+      component.ngOnInit();
+
+      expect(component.favorites).toEqual([
+        { imdbID: 'tt1234567', Title: 'Favorite Movie' },
+      ]);
+    });
   });
 
-  it('should fetch movie details successfully', () => {
-    const mockMovieDetails = {
-      Title: 'Mock Movie',
-      Year: '2023',
-      Genre: 'Action',
-      imdbID: 'tt1234567',
-    };
+  describe('searchMovies', () => {
+    it('should populate movies on successful search', () => {
+      const mockResponse = {
+        Response: 'True',
+        Search: [
+          { imdbID: 'tt1234567', Title: 'Movie 1' },
+          { imdbID: 'tt7654321', Title: 'Movie 2' },
+        ],
+      };
 
-    // Nova chamada explícita
-    component.getMovieDetails('tt1234567');
+      mockHttpClient.get.and.returnValue(of(mockResponse));
 
-    // Interceptar a nova requisição
-    const req = httpMock.expectOne(
-      `https://www.omdbapi.com/?i=tt1234567&apikey=11037ce9`
-    );
-    expect(req.request.method).toBe('GET');
+      component.searchQuery = 'Test';
+      component.searchMovies();
 
-    req.flush(mockMovieDetails);
+      expect(mockHttpClient.get).toHaveBeenCalledWith(
+        `https://www.omdbapi.com/?s=Test&apikey=11037ce9`
+      );
+      expect(component.movies).toEqual(mockResponse.Search);
+      expect(component.errorMessage).toBe('');
+    });
 
-    expect(component.movie).toEqual(mockMovieDetails);
+    it('should set errorMessage on failed search', () => {
+      const mockResponse = { Response: 'False', Error: 'Movie not found!' };
+
+      mockHttpClient.get.and.returnValue(of(mockResponse));
+
+      component.searchQuery = 'Invalid';
+      component.searchMovies();
+
+      expect(component.movies).toEqual([]);
+      expect(component.errorMessage).toBe('Movie not found!');
+    });
+
+    it('should handle HTTP error gracefully', () => {
+      mockHttpClient.get.and.returnValue(throwError(new Error('Network error')));
+
+      component.searchQuery = 'Test';
+      component.searchMovies();
+
+      expect(component.errorMessage).toBe('Erro ao buscar filmes. Tente novamente.');
+      expect(component.movies).toEqual([]);
+    });
   });
 
-  it('should handle error when fetching movie details', () => {
-    spyOn(console, 'error');
+  describe('toggleFavorite', () => {
+    it('should add a movie to favorites if it is not already a favorite', () => {
+      spyOn(component, 'addFavorite');
+      spyOn(component, 'removeFavorite');
 
-    // Nova chamada explícita
-    component.getMovieDetails('tt1234567');
+      const movie = { imdbID: 'tt1234567', Title: 'Movie 1' };
 
-    // Interceptar a nova requisição
-    const req = httpMock.expectOne(
-      `https://www.omdbapi.com/?i=tt1234567&apikey=11037ce9`
-    );
-    expect(req.request.method).toBe('GET');
+      component.toggleFavorite(movie);
 
-    req.error(new ErrorEvent('Network error'));
+      expect(component.addFavorite).toHaveBeenCalledWith(movie);
+      expect(component.removeFavorite).not.toHaveBeenCalled();
+    });
 
-    expect(console.error).toHaveBeenCalledWith(
-      'Erro ao buscar detalhes do filme:',
-      jasmine.any(Error)
-    );
-    expect(component.movie).toBeNull();
+    it('should remove a movie from favorites if it is already a favorite', () => {
+      spyOn(component, 'addFavorite');
+      spyOn(component, 'removeFavorite');
+
+      const movie = { imdbID: 'tt1234567', Title: 'Movie 1' };
+      component.favorites = [movie];
+
+      component.toggleFavorite(movie);
+
+      expect(component.addFavorite).not.toHaveBeenCalled();
+      expect(component.removeFavorite).toHaveBeenCalledWith(movie.imdbID);
+    });
+  });
+
+  describe('addFavorite', () => {
+    it('should add a movie to favorites and save to localStorage', () => {
+      spyOn(localStorage, 'setItem');
+      const movie = { imdbID: 'tt1234567', Title: 'Movie 1' };
+
+      component.addFavorite(movie);
+
+      expect(component.favorites).toContain(movie);
+      expect(localStorage.setItem).toHaveBeenCalledWith(
+        'favorites',
+        JSON.stringify(component.favorites)
+      );
+    });
+  });
+
+  describe('removeFavorite', () => {
+    it('should remove a movie from favorites and update localStorage', () => {
+      spyOn(localStorage, 'setItem');
+      const movie = { imdbID: 'tt1234567', Title: 'Movie 1' };
+      component.favorites = [movie];
+
+      component.removeFavorite('tt1234567');
+
+      expect(component.favorites).not.toContain(movie);
+      expect(localStorage.setItem).toHaveBeenCalledWith(
+        'favorites',
+        JSON.stringify(component.favorites)
+      );
+    });
+  });
+
+  describe('isFavorite', () => {
+    it('should return true if the movie is a favorite', () => {
+      const movie = { imdbID: 'tt1234567', Title: 'Movie 1' };
+      component.favorites = [movie];
+
+      expect(component.isFavorite('tt1234567')).toBeTrue();
+    });
+
+    it('should return false if the movie is not a favorite', () => {
+      component.favorites = [{ imdbID: 'tt1234567', Title: 'Movie 1' }];
+
+      expect(component.isFavorite('tt7654321')).toBeFalse();
+    });
   });
 });
