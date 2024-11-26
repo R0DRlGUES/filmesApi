@@ -18,7 +18,7 @@ describe('MovieDetailsComponent', () => {
             snapshot: {
               paramMap: {
                 get: (key: string) => {
-                  if (key === 'id') return 'tt1234567';
+                  if (key === 'id') return 'tt1234567'; // Mocked movie ID
                   return null;
                 },
               },
@@ -28,10 +28,12 @@ describe('MovieDetailsComponent', () => {
       ],
     }).compileComponents();
 
+    // Criar o componente e injetar o HttpTestingController
     fixture = TestBed.createComponent(MovieDetailsComponent);
     component = fixture.componentInstance;
+    httpMock = TestBed.inject(HttpTestingController);
 
-    // Interceptar a requisição feita no ngOnInit
+    // Interceptar a requisição inicial feita pelo ngOnInit
     const req = httpMock.expectOne(
       `https://www.omdbapi.com/?i=tt1234567&apikey=11037ce9`
     );
@@ -43,12 +45,12 @@ describe('MovieDetailsComponent', () => {
     });
 
     fixture.detectChanges();
-
-    httpMock = TestBed.inject(HttpTestingController);
   });
 
   afterEach(() => {
-    httpMock.verify();
+    if (httpMock) {
+      httpMock.verify(); // Verificar se todas as requisições foram tratadas
+    }
   });
 
   it('should create', () => {
@@ -70,7 +72,7 @@ describe('MovieDetailsComponent', () => {
     // Nova chamada explícita
     component.getMovieDetails('tt1234567');
 
-    // Interceptar a requisição explícita
+    // Interceptar a nova requisição
     const req = httpMock.expectOne(
       `https://www.omdbapi.com/?i=tt1234567&apikey=11037ce9`
     );
@@ -87,14 +89,14 @@ describe('MovieDetailsComponent', () => {
     // Nova chamada explícita
     component.getMovieDetails('tt1234567');
 
-    // Interceptar a requisição explícita
+    // Interceptar a nova requisição
     const req = httpMock.expectOne(
       `https://www.omdbapi.com/?i=tt1234567&apikey=11037ce9`
     );
     expect(req.request.method).toBe('GET');
 
     req.error(new ErrorEvent('Network error'));
-  
+
     expect(console.error).toHaveBeenCalledWith(
       'Erro ao buscar detalhes do filme:',
       jasmine.any(Error)
@@ -102,4 +104,3 @@ describe('MovieDetailsComponent', () => {
     expect(component.movie).toBeNull();
   });
 });
-
